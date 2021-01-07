@@ -11,14 +11,14 @@
 
 
 FROM ubuntu:bionic
-MAINTAINER Jesse Vincent <jesse@keyboard.io>
+#MAINTAINER Jesse Vincent <jesse@keyboard.io>
 LABEL Description="Minimal KiCad image based on Ubuntu"
-LABEL org.opencontainers.image.source https://github.com/obra/kicad-tools
+#LABEL org.opencontainers.image.source https://github.com/obra/kicad-tools
 
 ADD upstream/kicad-automation-scripts/kicad-ppa.pgp .
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
         apt-get -y update && \
-        apt-get -y install gnupg2 && \
+        apt-get -y install --no-install-recommends gnupg2 && \
         echo 'deb http://ppa.launchpad.net/js-reynaud/kicad-5.1/ubuntu bionic main' >> /etc/apt/sources.list && \
         apt-key add kicad-ppa.pgp && \
         apt-get -y update && apt-get -y install --no-install-recommends kicad kicad-footprints kicad-symbols kicad-packages3d && \
@@ -29,12 +29,11 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 COPY upstream/kicad-automation-scripts/eeschema/requirements.txt .
 RUN apt-get -y update && \
-    apt-get install -y python python-pip xvfb recordmydesktop xdotool xclip && \
+    apt-get install --no-install-recommends -y python python-pip xvfb recordmydesktop xdotool xclip && \
     pip install -r requirements.txt && \
+    apt-get -y remove python-pip && \
+    rm -rf /var/lib/apt/lists/* && \
     rm requirements.txt
-
-RUN apt-get -y remove python3-pip && \
-    rm -rf /var/lib/apt/lists/*
 
 
 # Use a UTF-8 compatible LANG because KiCad 5 uses UTF-8 in the PCBNew title
@@ -59,7 +58,8 @@ RUN cp /usr/share/kicad/template/fp-lib-table /root/.config/kicad/
 # Kicad's libraries are tied to python3, so we need to install kiplot with
 # python 3
 RUN apt-get -y update && \
-    apt-get install -y python3-pip
+    apt-get install --no-install-recommends -y python3-pip && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY upstream/kiplot /opt/kiplot
 
@@ -84,7 +84,7 @@ COPY scripts/make-interactive-bom /opt/InteractiveHtmlBom/
 
 # Install image diffing
 RUN apt-get -y update && \
-    apt-get install -y imagemagick && \
+    apt-get install --no-install-recommends -y imagemagick && \
     rm -rf /var/lib/apt/lists/* && \
     sed -i '/disable ghostscript format types/d' /etc/ImageMagick-6/policy.xml && \
     sed -i '/\"PS\"/d' /etc/ImageMagick-6/policy.xml && \

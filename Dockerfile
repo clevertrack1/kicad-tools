@@ -30,6 +30,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 COPY upstream/kicad-automation-scripts/eeschema/requirements.txt .
 RUN apt-get -y update && \
     apt-get install --no-install-recommends -y python python-pip python-setuptools xvfb recordmydesktop xdotool xclip && \
+    pip install wheel && \
     pip install -r requirements.txt && \
     apt-get -y remove python-pip && \
     rm -rf /var/lib/apt/lists/* && \

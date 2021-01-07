@@ -58,7 +58,7 @@ RUN cp /usr/share/kicad/template/fp-lib-table /root/.config/kicad/
 # Kicad's libraries are tied to python3, so we need to install kiplot with
 # python 3
 RUN apt-get -y update && \
-    apt-get install --no-install-recommends -y python3-pip && \
+    apt-get install --no-install-recommends -y python3-pip python3-setuptools && \
     rm -rf /var/lib/apt/lists/*
 
 COPY upstream/kiplot /opt/kiplot
